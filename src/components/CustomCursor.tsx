@@ -1,26 +1,32 @@
-import React, { useEffect, useState } from 'react';
-import { motion, useSpring } from 'motion/react';
+import React, { useEffect, useState, useRef } from 'react';
+import { motion, useMotionValue, useSpring } from 'motion/react';
 
 export const CustomCursor: React.FC = () => {
   const [enabled, setEnabled] = useState(false);
-  const [cursorPos, setCursorPos] = useState({ x: -100, y: -100 });
   const [cursorLabel, setCursorLabel] = useState<string | null>(null);
   const [isHovered, setIsHovered] = useState(false);
   const [isClicking, setIsClicking] = useState(false);
 
-  // Smooth spring physics for trailing ring
-  const springConfig = { damping: 25, stiffness: 220, mass: 0.4 };
-  const smoothX = useSpring(-100, springConfig);
-  const smoothY = useSpring(-100, springConfig);
+  // Directly mutate motion values without React re-renders on mousemove
+  const mouseX = useMotionValue(-100);
+  const mouseY = useMotionValue(-100);
+
+  // Spring physics for trailing ring
+  const springConfig = { damping: 28, stiffness: 240, mass: 0.35 };
+  const smoothX = useSpring(mouseX, springConfig);
+  const smoothY = useSpring(mouseY, springConfig);
+
+  // Precision dot ref to bypass React render loop completely for dot position
+  const dotRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    // Check touch device or reduced motion
-    const hasTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+    // Only mount on devices with fine pointer (mouse/trackpad), not touch screens
+    const hasFinePointer = window.matchMedia('(pointer: fine)').matches;
     const prefersReducedMotion = window.matchMedia(
       '(prefers-reduced-motion: reduce)'
     ).matches;
 
-    if (hasTouch || prefersReducedMotion) {
+    if (!hasFinePointer || prefersReducedMotion) {
       setEnabled(false);
       return;
     }
@@ -28,13 +34,29 @@ export const CustomCursor: React.FC = () => {
     setEnabled(true);
     document.documentElement.classList.add('custom-cursor-active');
 
-    const handleMouseMove = (e: MouseEvent) => {
-      setCursorPos({ x: e.clientX, y: e.clientY });
-      smoothX.set(e.clientX);
-      smoothY.set(e.clientY);
+    let currentTargetEl: HTMLElement | null = null;
 
-      // Check target or parent for data-cursor or interactive tag
+    const handleMouseMove = (e: MouseEvent) => {
+      const clientX = e.clientX;
+      const clientY = e.clientY;
+
+      // Update motion values for trailing ring (no React re-render)
+      mouseX.set(clientX);
+      mouseY.set(clientY);
+
+      // Directly update dot transform using translate3d (zero re-render cost)
+      if (dotRef.current) {
+        dotRef.current.style.transform = `translate3d(${clientX - 4}px, ${clientY - 4}px, 0)`;
+        if (dotRef.current.style.opacity !== '1') {
+          dotRef.current.style.opacity = '1';
+        }
+      }
+
+      // Check target element only when hovering over something new
       const target = e.target as HTMLElement | null;
+      if (target === currentTargetEl) return;
+      currentTargetEl = target;
+
       if (!target) return;
 
       const cursorTarget = target.closest('[data-cursor]') as HTMLElement | null;
@@ -59,7 +81,7 @@ export const CustomCursor: React.FC = () => {
     const handleMouseDown = () => setIsClicking(true);
     const handleMouseUp = () => setIsClicking(false);
 
-    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('mousemove', handleMouseMove, { passive: true });
     window.addEventListener('mousedown', handleMouseDown);
     window.addEventListener('mouseup', handleMouseUp);
 
@@ -69,31 +91,27 @@ export const CustomCursor: React.FC = () => {
       window.removeEventListener('mousedown', handleMouseDown);
       window.removeEventListener('mouseup', handleMouseUp);
     };
-  }, [smoothX, smoothY]);
+  }, [mouseX, mouseY]);
 
   if (!enabled) return null;
 
-  const ringSize = cursorLabel ? 76 : isHovered ? 56 : 38;
+  const ringSize = cursorLabel ? 76 : isHovered ? 52 : 36;
 
   return (
     <div className="pointer-events-none fixed inset-0 z-[9999] overflow-hidden">
-      {/* Small precision solid dot */}
-      <motion.div
-        className="fixed top-0 left-0 h-2 w-2 rounded-full bg-[#0B1215] pointer-events-none"
+      {/* Precision solid dot positioned via direct hardware transform */}
+      <div
+        ref={dotRef}
+        className="fixed top-0 left-0 h-2 w-2 rounded-full bg-[#0B1215] pointer-events-none opacity-0 will-change-transform"
         style={{
-          x: cursorPos.x - 4,
-          y: cursorPos.y - 4,
-          opacity: cursorPos.x < 0 ? 0 : 1,
+          transform: 'translate3d(-100px, -100px, 0)',
+          transition: 'opacity 0.15s ease',
         }}
-        animate={{
-          scale: isClicking ? 0.6 : 1,
-        }}
-        transition={{ duration: 0.1 }}
       />
 
-      {/* Trailing spring ring */}
+      {/* Trailing spring ring with hardware-accelerated motion */}
       <motion.div
-        className="fixed top-0 left-0 flex items-center justify-center rounded-full pointer-events-none border border-emerald-600/40 bg-emerald-500/5 backdrop-blur-[1px]"
+        className="fixed top-0 left-0 flex items-center justify-center rounded-full pointer-events-none border border-emerald-600/40 bg-emerald-500/5 backdrop-blur-[1px] will-change-transform"
         style={{
           x: smoothX,
           y: smoothY,
@@ -101,7 +119,6 @@ export const CustomCursor: React.FC = () => {
           height: ringSize,
           translateX: -ringSize / 2,
           translateY: -ringSize / 2,
-          opacity: cursorPos.x < 0 ? 0 : 1,
         }}
         animate={{
           scale: isClicking ? 0.85 : 1,
@@ -109,17 +126,12 @@ export const CustomCursor: React.FC = () => {
             ? 'rgba(15, 118, 110, 0.8)'
             : 'rgba(15, 118, 110, 0.35)',
         }}
-        transition={{ type: 'spring', damping: 20, stiffness: 260 }}
+        transition={{ type: 'spring', damping: 22, stiffness: 280 }}
       >
         {cursorLabel && (
-          <motion.span
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.8 }}
-            className="text-[10px] font-bold uppercase tracking-wider text-emerald-950 font-display select-none"
-          >
+          <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-950 font-display select-none">
             {cursorLabel}
-          </motion.span>
+          </span>
         )}
       </motion.div>
     </div>

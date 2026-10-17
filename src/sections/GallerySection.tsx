@@ -4,7 +4,7 @@ import { Camera, Maximize2 } from 'lucide-react';
 import { GALLERY_PHOTOS } from '../assets/images';
 import { Lightbox } from '../components/Lightbox';
 
-export const GallerySection: React.FC = () => {
+export const GallerySection: React.FC = React.memo(() => {
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [activePhotoIdx, setActivePhotoIdx] = useState(0);
 
@@ -50,13 +50,13 @@ export const GallerySection: React.FC = () => {
           {GALLERY_PHOTOS.map((photo, idx) => (
             <motion.div
               key={photo.id}
+              initial={{ opacity: 0, y: 24 }}
               whileInView={{ opacity: 1, y: 0 }}
-              initial={{ opacity: 0, y: 25 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.4, delay: idx * 0.08 }}
+              viewport={{ once: true, margin: '-80px' }}
+              transition={{ duration: 0.6, delay: idx * 0.06, ease: [0.22, 1, 0.36, 1] }}
               onClick={() => handleOpen(idx)}
               data-cursor="View"
-              className={`group relative rounded-3xl overflow-hidden bg-stone-100 cursor-pointer shadow-sm hover:shadow-xl transition-all duration-300 ${photo.span}`}
+              className={`group relative rounded-3xl overflow-hidden bg-stone-100 cursor-pointer shadow-sm hover:shadow-xl transition-all duration-300 border border-black/5 ${photo.span}`}
             >
               <div className="relative h-72 sm:h-80 w-full overflow-hidden">
                 <img
@@ -64,6 +64,7 @@ export const GallerySection: React.FC = () => {
                   alt={photo.alt}
                   className="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
                   loading="lazy"
+                  decoding="async"
                   referrerPolicy="no-referrer"
                 />
 
@@ -99,4 +100,4 @@ export const GallerySection: React.FC = () => {
       />
     </section>
   );
-};
+});

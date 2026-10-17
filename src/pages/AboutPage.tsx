@@ -1,6 +1,5 @@
 import React from 'react';
-import { motion } from 'motion/react';
-import { ShieldCheck, Heart, Sparkles, MapPin, Phone, ArrowUpRight, CheckCircle2 } from 'lucide-react';
+import { ShieldCheck, Heart, MapPin, Phone, ArrowUpRight, Compass, CheckCircle2 } from 'lucide-react';
 import { SITE_CONFIG } from '../config/site';
 import { STORE_IMAGES } from '../assets/images';
 import { MagneticButton } from '../components/MagneticButton';
@@ -12,7 +11,7 @@ export const AboutPage: React.FC = () => {
         {/* Hero Banner for About */}
         <div className="max-w-3xl mb-16">
           <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-emerald-800 mb-3">
-            <Sparkles className="h-4 w-4" />
+            <Compass className="h-4 w-4" />
             <span>Our Roots & Story</span>
           </div>
           <h1 className="text-4xl sm:text-6xl font-display font-bold text-[#0B1215] tracking-tight leading-[1.05]">
@@ -26,13 +25,14 @@ export const AboutPage: React.FC = () => {
         </div>
 
         {/* Feature Story Image & Text Split */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center mb-20">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-center mb-20">
           <div className="lg:col-span-6 relative rounded-3xl overflow-hidden shadow-xl border-4 border-white bg-stone-100">
             <img
               src={STORE_IMAGES.aisles}
               alt="Inside Declare Groceries shelves in Moston Manchester"
               className="w-full h-auto object-cover"
-              loading="eager"
+              loading="lazy"
+              decoding="async"
               referrerPolicy="no-referrer"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
@@ -65,7 +65,7 @@ export const AboutPage: React.FC = () => {
             </p>
 
             <div className="pt-2 grid grid-cols-2 gap-4">
-              <div className="p-4 rounded-2xl bg-white border border-stone-200">
+              <div className="p-4 rounded-2xl bg-white border border-black/5 shadow-[0_2px_12px_rgb(0,0,0,0.02)]">
                 <div className="text-2xl font-bold font-display text-emerald-800">
                   100% Halal
                 </div>
@@ -74,7 +74,7 @@ export const AboutPage: React.FC = () => {
                 </div>
               </div>
 
-              <div className="p-4 rounded-2xl bg-white border border-stone-200">
+              <div className="p-4 rounded-2xl bg-white border border-black/5 shadow-[0_2px_12px_rgb(0,0,0,0.02)]">
                 <div className="text-2xl font-bold font-display text-amber-700">
                   7 Days / Week
                 </div>
@@ -98,7 +98,7 @@ export const AboutPage: React.FC = () => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="p-7 rounded-3xl bg-white border border-stone-200 shadow-sm space-y-3">
+            <div className="p-7 rounded-3xl bg-white border border-black/5 shadow-[0_4px_20px_rgb(0,0,0,0.03)] space-y-3">
               <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-700">
                 <ShieldCheck className="h-6 w-6" />
               </div>
@@ -111,9 +111,9 @@ export const AboutPage: React.FC = () => {
               </p>
             </div>
 
-            <div className="p-7 rounded-3xl bg-white border border-stone-200 shadow-sm space-y-3">
+            <div className="p-7 rounded-3xl bg-white border border-black/5 shadow-[0_4px_20px_rgb(0,0,0,0.03)] space-y-3">
               <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-amber-50 text-amber-700">
-                <Sparkles className="h-6 w-6" />
+                <CheckCircle2 className="h-6 w-6" />
               </div>
               <h3 className="text-xl font-display font-bold text-stone-900">
                 Direct Continental Imports
@@ -124,7 +124,7 @@ export const AboutPage: React.FC = () => {
               </p>
             </div>
 
-            <div className="p-7 rounded-3xl bg-white border border-stone-200 shadow-sm space-y-3">
+            <div className="p-7 rounded-3xl bg-white border border-black/5 shadow-[0_4px_20px_rgb(0,0,0,0.03)] space-y-3">
               <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-lime-50 text-lime-700">
                 <Heart className="h-6 w-6" />
               </div>
@@ -150,25 +150,27 @@ export const AboutPage: React.FC = () => {
             </p>
           </div>
 
-          <div className="flex flex-wrap gap-3">
+          <div className="flex flex-col min-[480px]:flex-row gap-3 w-full md:w-auto">
             <MagneticButton
               as="a"
               href={SITE_CONFIG.contact.mapsDirectionsUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 rounded-2xl bg-white text-stone-950 px-5 py-3 text-sm font-bold shadow hover:bg-stone-100 transition-colors"
+              ariaLabel="Get Directions in Google Maps"
+              className="inline-flex items-center justify-center gap-2 rounded-2xl bg-white text-stone-950 px-5 py-3 min-h-[48px] text-sm font-bold shadow hover:bg-stone-100 transition-colors whitespace-nowrap"
             >
-              <MapPin className="h-4 w-4 text-emerald-700" />
+              <MapPin className="h-4 w-4 text-emerald-700 shrink-0" />
               <span>Get Directions</span>
-              <ArrowUpRight className="h-4 w-4" />
+              <ArrowUpRight className="h-4 w-4 shrink-0" />
             </MagneticButton>
 
             <MagneticButton
               as="a"
               href={SITE_CONFIG.contact.phoneTel}
-              className="inline-flex items-center gap-2 rounded-2xl border border-white/30 px-5 py-3 text-sm font-semibold text-white hover:bg-white/10 transition-colors"
+              ariaLabel={`Call Declare Groceries at ${SITE_CONFIG.contact.phoneFormatted}`}
+              className="inline-flex items-center justify-center gap-2 rounded-2xl border border-white/30 px-5 py-3 min-h-[48px] text-sm font-semibold text-white hover:bg-white/10 transition-colors whitespace-nowrap"
             >
-              <Phone className="h-4 w-4" />
+              <Phone className="h-4 w-4 shrink-0" />
               <span>Call Store</span>
             </MagneticButton>
           </div>

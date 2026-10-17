@@ -1,23 +1,22 @@
 import React from 'react';
-import { motion } from 'motion/react';
-import { ExternalLink, Play, Sparkles } from 'lucide-react';
+import { ExternalLink, Play, Video } from 'lucide-react';
 import { SITE_CONFIG } from '../config/site';
 import { STORE_IMAGES } from '../assets/images';
 
-export const TikTokSection: React.FC = () => {
+export const TikTokSection: React.FC = React.memo(() => {
   return (
     <section className="py-16 sm:py-24 px-4 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-7xl">
         <div className="relative rounded-3xl overflow-hidden bg-gradient-to-br from-[#0F766E] via-[#044E46] to-[#0B1215] p-8 sm:p-12 lg:p-16 text-white shadow-2xl">
-          {/* Subtle background glow */}
-          <div className="absolute top-0 right-0 -mr-20 -mt-20 h-96 w-96 rounded-full bg-emerald-500/20 blur-3xl pointer-events-none" />
-          <div className="absolute bottom-0 left-1/3 -mb-20 h-72 w-72 rounded-full bg-amber-500/15 blur-3xl pointer-events-none" />
+          {/* Static pre-blurred radial gradients */}
+          <div className="absolute top-0 right-0 -mr-20 -mt-20 h-96 w-96 rounded-full bg-[radial-gradient(circle,rgba(16,185,129,0.2)_0%,transparent_70%)] pointer-events-none" />
+          <div className="absolute bottom-0 left-1/3 -mb-20 h-72 w-72 rounded-full bg-[radial-gradient(circle,rgba(245,158,11,0.15)_0%,transparent_70%)] pointer-events-none" />
 
           <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
             {/* Left Column: Text & CTA */}
             <div className="lg:col-span-7 space-y-6">
-              <div className="inline-flex items-center gap-2 rounded-full bg-white/10 backdrop-blur-md px-3.5 py-1 text-xs font-semibold text-emerald-300 border border-white/10">
-                <Sparkles className="h-3.5 w-3.5" />
+              <div className="inline-flex items-center gap-2 rounded-full bg-white/10 px-3.5 py-1 text-xs font-semibold text-emerald-300 border border-white/10">
+                <Video className="h-3.5 w-3.5" />
                 <span>@declare.shop on TikTok</span>
               </div>
 
@@ -37,11 +36,11 @@ export const TikTokSection: React.FC = () => {
                   target="_blank"
                   rel="noopener noreferrer"
                   data-cursor="TikTok"
-                  className="group relative inline-flex items-center gap-2 rounded-full bg-white text-stone-950 px-6 py-3.5 text-sm sm:text-base font-bold shadow-lg hover:bg-stone-100 transition-all duration-200"
+                  className="group relative inline-flex items-center justify-center gap-2 rounded-full bg-white text-stone-950 px-6 py-3 min-h-[48px] text-sm sm:text-base font-bold shadow-lg hover:bg-stone-100 transition-all duration-200 whitespace-nowrap"
                 >
-                  <Play className="h-4 w-4 fill-current text-[#0F766E]" />
+                  <Play className="h-4 w-4 fill-current text-[#0F766E] shrink-0" />
                   <span>Follow us on TikTok</span>
-                  <ExternalLink className="h-4 w-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+                  <ExternalLink className="h-4 w-4 shrink-0 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
                 </a>
 
                 <span className="text-xs text-emerald-200/70">
@@ -52,12 +51,7 @@ export const TikTokSection: React.FC = () => {
 
             {/* Right Column: Phone Mockup Frame */}
             <div className="lg:col-span-5 flex justify-center">
-              <motion.div
-                whileHover={{ rotate: 0, scale: 1.03 }}
-                initial={{ rotate: 2 }}
-                transition={{ duration: 0.3 }}
-                className="relative w-64 sm:w-72 rounded-[2.5rem] p-3 bg-stone-900 border-4 border-stone-700/80 shadow-[0_25px_60px_-15px_rgba(0,0,0,0.7)]"
-              >
+              <div className="relative w-64 sm:w-72 rounded-[2.5rem] p-3 bg-stone-900 border-4 border-stone-700/80 shadow-[0_25px_60px_-15px_rgba(0,0,0,0.7)] rotate-1 hover:rotate-0 transition-transform duration-300">
                 {/* Phone Speaker & Camera Notch */}
                 <div className="absolute top-5 left-1/2 -translate-x-1/2 h-4 w-28 rounded-full bg-black z-20" />
 
@@ -68,6 +62,7 @@ export const TikTokSection: React.FC = () => {
                     alt="Declare Groceries store video preview on TikTok"
                     className="h-full w-full object-cover opacity-90"
                     loading="lazy"
+                    decoding="async"
                     referrerPolicy="no-referrer"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black via-black/30 to-black/40" />
@@ -94,16 +89,16 @@ export const TikTokSection: React.FC = () => {
                     className="absolute inset-0 flex items-center justify-center group/play"
                     aria-label="Open TikTok video"
                   >
-                    <div className="h-14 w-14 rounded-full bg-black/60 backdrop-blur-md border border-white/30 flex items-center justify-center text-white group-hover/play:scale-110 transition-transform">
+                    <div className="h-14 w-14 rounded-full bg-black/60 border border-white/30 flex items-center justify-center text-white group-hover/play:scale-110 transition-transform">
                       <Play className="h-6 w-6 fill-current text-white ml-0.5" />
                     </div>
                   </a>
                 </div>
-              </motion.div>
+              </div>
             </div>
           </div>
         </div>
       </div>
     </section>
   );
-};
+});

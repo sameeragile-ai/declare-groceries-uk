@@ -4,7 +4,7 @@ import { ArrowRight, Check, Compass } from 'lucide-react';
 import { SITE_CONFIG } from '../config/site';
 import { STORE_IMAGES } from '../assets/images';
 
-export const ShopByRegion: React.FC = () => {
+export const ShopByRegion: React.FC = React.memo(() => {
   const [activeCard, setActiveCard] = useState<string | null>(null);
 
   // Region image mappings
@@ -33,29 +33,35 @@ export const ShopByRegion: React.FC = () => {
           </p>
         </div>
 
-        {/* 3 Large Interactive Region Cards (Desktop 3-col, Mobile Snap Carousel) */}
+        {/* 3 Interactive Region Cards */}
         <div className="flex sm:grid sm:grid-cols-2 lg:grid-cols-3 gap-6 overflow-x-auto sm:overflow-visible pb-6 sm:pb-0 snap-x snap-mandatory scrollbar-none -mx-4 px-4 sm:mx-0 sm:px-0">
-          {SITE_CONFIG.regions.map((region) => {
-            const isHovered = activeCard === region.id;
+          {SITE_CONFIG.regions.map((region, idx) => {
             const bgImage = regionImages[region.id];
 
             return (
               <motion.div
                 key={region.id}
+                initial={{ opacity: 0, y: 24 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: '-80px' }}
+                transition={{
+                  duration: 0.7,
+                  delay: idx * 0.1,
+                  ease: [0.22, 1, 0.36, 1],
+                }}
                 onMouseEnter={() => setActiveCard(region.id)}
                 onMouseLeave={() => setActiveCard(null)}
-                whileHover={{ y: -6 }}
-                transition={{ duration: 0.3 }}
                 data-cursor="Discover"
-                className="group relative flex-none w-[85vw] sm:w-auto snap-center rounded-3xl overflow-hidden bg-white border border-stone-200/90 shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-2xl transition-all duration-300 flex flex-col justify-between"
+                className="group relative flex-none w-[85vw] sm:w-auto snap-center rounded-3xl overflow-hidden bg-white border border-black/5 shadow-[0_4px_20px_rgb(0,0,0,0.03)] hover:shadow-xl transition-all duration-300 flex flex-col justify-between"
               >
                 {/* Image Container with slow zoom on hover */}
                 <div className="relative h-64 sm:h-72 w-full overflow-hidden bg-stone-100">
                   <img
                     src={bgImage}
                     alt={region.title}
-                    className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-108"
+                    className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
                     loading="lazy"
+                    decoding="async"
                     referrerPolicy="no-referrer"
                   />
                   <div
@@ -121,4 +127,4 @@ export const ShopByRegion: React.FC = () => {
       </div>
     </section>
   );
-};
+});

@@ -3,7 +3,7 @@
  * Built for 374 Moston Ln, Manchester M40 9JS
  */
 
-import React, { useEffect } from 'react';
+import React, { useEffect, Suspense, lazy } from 'react';
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 import { useLenis } from './hooks/useLenis';
 import { CustomCursor } from './components/CustomCursor';
@@ -11,10 +11,20 @@ import { Preloader } from './components/Preloader';
 import { Navbar } from './components/Navbar';
 import { Footer } from './components/Footer';
 import { FloatingMobileBar } from './components/FloatingMobileBar';
-import { HomePage } from './pages/HomePage';
-import { AboutPage } from './pages/AboutPage';
-import { ContactPage } from './pages/ContactPage';
-import { NotFoundPage } from './pages/NotFoundPage';
+
+// Lazy-load route pages for instant initial bundle loading
+const HomePage = lazy(() =>
+  import('./pages/HomePage').then((module) => ({ default: module.HomePage }))
+);
+const AboutPage = lazy(() =>
+  import('./pages/AboutPage').then((module) => ({ default: module.AboutPage }))
+);
+const ContactPage = lazy(() =>
+  import('./pages/ContactPage').then((module) => ({ default: module.ContactPage }))
+);
+const NotFoundPage = lazy(() =>
+  import('./pages/NotFoundPage').then((module) => ({ default: module.NotFoundPage }))
+);
 
 // Scroll to top on route change or handle hash scroll
 function ScrollManager() {
@@ -26,7 +36,7 @@ function ScrollManager() {
       if (targetElement) {
         setTimeout(() => {
           targetElement.scrollIntoView({ behavior: 'smooth' });
-        }, 100);
+        }, 80);
         return;
       }
     }
@@ -36,28 +46,38 @@ function ScrollManager() {
   return null;
 }
 
+function PageFallback() {
+  return (
+    <div className="min-h-screen flex items-center justify-center">
+      <div className="h-6 w-6 rounded-full border-2 border-emerald-700 border-t-transparent animate-spin" />
+    </div>
+  );
+}
+
 function MainApp() {
   useLenis();
 
   return (
     <div className="relative min-h-screen bg-[#FDFBF7] text-[#0B1215] bg-grain">
-      {/* Branded First-Visit Preloader */}
+      {/* Branded Non-Blocking Preloader */}
       <Preloader />
 
-      {/* Desktop Spring Cursor */}
+      {/* Desktop Hardware Spring Cursor */}
       <CustomCursor />
 
-      {/* Sticky Header */}
+      {/* Always Sticky Header */}
       <Navbar />
 
       {/* Main Content Area */}
       <ScrollManager />
-      <Routes>
-        <Route path="/" element={<HomePage />} />
-        <Route path="/about" element={<AboutPage />} />
-        <Route path="/contact" element={<ContactPage />} />
-        <Route path="*" element={<NotFoundPage />} />
-      </Routes>
+      <Suspense fallback={<PageFallback />}>
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/about" element={<AboutPage />} />
+          <Route path="/contact" element={<ContactPage />} />
+          <Route path="*" element={<NotFoundPage />} />
+        </Routes>
+      </Suspense>
 
       {/* Footer */}
       <Footer />

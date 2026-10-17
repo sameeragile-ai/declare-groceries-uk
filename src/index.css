@@ -24,7 +24,7 @@
   }
 }
 
-/* Custom cursor default hide on mouse devices */
+/* Custom cursor hide only on mouse devices */
 @media (hover: hover) and (pointer: fine) {
   .custom-cursor-active,
   .custom-cursor-active * {
@@ -32,15 +32,26 @@
   }
 }
 
-/* Subtle organic grain overlay */
+/* Static, non-repainting subtle grain overlay */
 .bg-grain {
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.035'/%3E%3C/svg%3E");
+  position: relative;
+}
+.bg-grain::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0.025;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
 }
 
 /* Sheen sweep animation for gradient CTAs */
 @keyframes sheen {
-  0% { transform: translateX(-150%) skewX(-20deg); }
-  100% { transform: translateX(250%) skewX(-20deg); }
+  0% { transform: translate3d(-150%, 0, 0) skewX(-20deg); }
+  100% { transform: translate3d(250%, 0, 0) skewX(-20deg); }
 }
 
 .animate-sheen:hover::after {
@@ -53,10 +64,11 @@
   background: linear-gradient(
     90deg,
     rgba(255, 255, 255, 0) 0%,
-    rgba(255, 255, 255, 0.35) 50%,
+    rgba(255, 255, 255, 0.3) 50%,
     rgba(255, 255, 255, 0) 100%
   );
-  animation: sheen 1s ease-in-out infinite;
+  animation: sheen 1.2s ease-in-out infinite;
+  pointer-events: none;
 }
 
 /* Gradient text utility */
@@ -72,22 +84,47 @@
   -webkit-text-fill-color: transparent;
 }
 
-/* Gradient border mask for cards */
-.gradient-border-card {
-  position: relative;
-  background: #FFFFFF;
-  border-radius: 1.5rem;
+/* 60fps Hardware-Accelerated Marquee Animations */
+@keyframes marquee-left {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+  100% {
+    transform: translate3d(-50%, 0, 0);
+  }
 }
 
-.gradient-border-card::before {
-  content: "";
-  position: absolute;
-  inset: -1px;
-  border-radius: inherit;
-  padding: 1px;
-  background: linear-gradient(135deg, rgba(15, 118, 110, 0.3), rgba(132, 204, 22, 0.2), rgba(249, 115, 22, 0.2));
-  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-  -webkit-mask-composite: xor;
-  mask-composite: exclude;
-  pointer-events: none;
+@keyframes marquee-right {
+  0% {
+    transform: translate3d(-50%, 0, 0);
+  }
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+.animate-marquee-left {
+  display: flex;
+  width: max-content;
+  animation: marquee-left 32s linear infinite;
+  will-change: transform;
+}
+
+.animate-marquee-right {
+  display: flex;
+  width: max-content;
+  animation: marquee-right 34s linear infinite;
+  will-change: transform;
+}
+
+.marquee-container:hover .animate-marquee-left,
+.marquee-container:hover .animate-marquee-right {
+  animation-play-state: paused;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-marquee-left,
+  .animate-marquee-right {
+    animation: none !important;
+  }
 }

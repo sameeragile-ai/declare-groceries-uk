@@ -3,7 +3,7 @@ import { motion } from 'motion/react';
 import { Star, ExternalLink, MessageSquareQuote, CheckCircle2 } from 'lucide-react';
 import { SITE_CONFIG } from '../config/site';
 
-export const ReviewsSection: React.FC = () => {
+export const ReviewsSection: React.FC = React.memo(() => {
   return (
     <section className="py-20 sm:py-28 px-4 sm:px-6 lg:px-8 bg-[#FDFBF7] relative">
       <div className="mx-auto max-w-7xl">
@@ -24,7 +24,7 @@ export const ReviewsSection: React.FC = () => {
           </div>
 
           {/* Rating Summary Card */}
-          <div className="flex items-center gap-4 p-4 sm:p-5 rounded-2xl bg-white border border-stone-200/90 shadow-sm shrink-0">
+          <div className="flex items-center gap-4 p-4 sm:p-5 rounded-2xl bg-white border border-black/5 shadow-[0_2px_12px_rgb(0,0,0,0.03)] shrink-0">
             <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-amber-50 text-amber-600 font-display font-black text-2xl">
               5.0
             </div>
@@ -47,11 +47,11 @@ export const ReviewsSection: React.FC = () => {
           {SITE_CONFIG.reviews.map((rev, idx) => (
             <motion.div
               key={rev.id}
+              initial={{ opacity: 0, y: 24 }}
               whileInView={{ opacity: 1, y: 0 }}
-              initial={{ opacity: 0, y: 25 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.4, delay: idx * 0.1 }}
-              className="p-7 sm:p-8 rounded-3xl bg-white border border-stone-200/90 shadow-sm flex flex-col justify-between"
+              viewport={{ once: true, margin: '-80px' }}
+              transition={{ duration: 0.6, delay: idx * 0.1, ease: [0.22, 1, 0.36, 1] }}
+              className="p-7 sm:p-8 rounded-3xl bg-white border border-black/5 shadow-[0_4px_20px_rgb(0,0,0,0.03)] flex flex-col justify-between"
             >
               <div>
                 <div className="flex items-center justify-between mb-4">
@@ -109,4 +109,4 @@ export const ReviewsSection: React.FC = () => {
       </div>
     </section>
   );
-};
+});

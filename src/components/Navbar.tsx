@@ -1,44 +1,28 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { motion, AnimatePresence, useScroll } from 'motion/react';
+import { motion, AnimatePresence, useScroll, useMotionValueEvent } from 'motion/react';
 import { Phone, MapPin, ExternalLink, X, Menu } from 'lucide-react';
 import { SITE_CONFIG, getStoreStatus } from '../config/site';
 import { MagneticButton } from './MagneticButton';
 
 export const Navbar: React.FC = () => {
   const [isScrolled, setIsScrolled] = useState(false);
-  const [isVisible, setIsVisible] = useState(true);
-  const [lastScrollY, setLastScrollY] = useState(0);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
 
-  const { scrollYProgress } = useScroll();
+  const { scrollY, scrollYProgress } = useScroll();
   const location = useLocation();
   const storeStatus = getStoreStatus();
 
-  // Scroll direction detection (hide on scroll down, show on scroll up)
-  useEffect(() => {
-    const handleScroll = () => {
-      const currentScrollY = window.scrollY;
-
-      if (currentScrollY > 60) {
-        setIsScrolled(true);
-      } else {
-        setIsScrolled(false);
-      }
-
-      if (currentScrollY > lastScrollY && currentScrollY > 150) {
-        setIsVisible(false); // scrolling down
-      } else {
-        setIsVisible(true); // scrolling up
-      }
-
-      setLastScrollY(currentScrollY);
-    };
-
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, [lastScrollY]);
+  // FIX 1: Only update isScrolled when boolean actually changes past 20px threshold
+  const scrolledRef = useRef(false);
+  useMotionValueEvent(scrollY, 'change', (latest) => {
+    const shouldBeScrolled = latest > 20;
+    if (shouldBeScrolled !== scrolledRef.current) {
+      scrolledRef.current = shouldBeScrolled;
+      setIsScrolled(shouldBeScrolled);
+    }
+  });
 
   // Lock body scroll when mobile menu is open
   useEffect(() => {
@@ -69,19 +53,20 @@ export const Navbar: React.FC = () => {
 
   return (
     <>
+      {/* FIX 1: Fixed at top at all times, no hide-on-scroll */}
       <header
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ease-out ${
-          isVisible ? 'translate-y-0' : '-translate-y-full'
-        } ${isScrolled ? 'pt-3 sm:pt-4 px-3 sm:px-6' : 'pt-5 sm:pt-6 px-4 sm:px-8'}`}
+          isScrolled ? 'pt-3 sm:pt-4 px-3 sm:px-6' : 'pt-5 sm:pt-6 px-4 sm:px-8'
+        }`}
       >
         <div
           className={`mx-auto max-w-7xl transition-all duration-300 ${
             isScrolled
-              ? 'rounded-full bg-white/80 backdrop-blur-xl border border-stone-200/70 shadow-[0_8px_30px_rgb(0,0,0,0.06)] px-4 sm:px-6 py-2.5 sm:py-3'
+              ? 'rounded-full bg-white/80 backdrop-blur-md border border-black/5 shadow-[0_8px_30px_rgb(0,0,0,0.06)] px-4 sm:px-6 py-2 sm:py-2.5'
               : 'bg-transparent px-2 py-2'
           }`}
         >
-          <div className="flex items-center justify-between gap-6">
+          <div className="flex items-center justify-between gap-4 sm:gap-6">
             {/* Zone 1: Single text element wordmark */}
             <Link
               to="/"
@@ -109,7 +94,7 @@ export const Navbar: React.FC = () => {
                     className="relative px-3.5 py-1.5 text-sm font-medium text-stone-700 hover:text-stone-950 transition-colors whitespace-nowrap shrink-0"
                   >
                     {item.name}
-                    {/* Animated hover/active pill indicator */}
+                    {/* Animated hover/active indicator */}
                     {hoveredIndex === idx && (
                       <motion.div
                         layoutId="navHoverPill"
@@ -117,7 +102,7 @@ export const Navbar: React.FC = () => {
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
-                        transition={{ type: 'spring', bounce: 0.2, duration: 0.3 }}
+                        transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
                       />
                     )}
                     {isActive && hoveredIndex === null && (
@@ -128,8 +113,8 @@ export const Navbar: React.FC = () => {
               })}
             </nav>
 
-            {/* Zone 3: Live Status & Primary Action */}
-            <div className="flex items-center gap-3 shrink-0">
+            {/* Zone 3: Live Status & Responsive Call Action */}
+            <div className="flex items-center gap-2.5 sm:gap-3 shrink-0">
               {/* Live Status indicator */}
               <div
                 className="hidden lg:flex items-center gap-2 px-3 py-1 text-xs font-medium text-stone-700 rounded-full bg-stone-100/80 border border-stone-200/60"
@@ -150,22 +135,36 @@ export const Navbar: React.FC = () => {
                 </span>
               </div>
 
-              {/* Magnetic Call Now CTA */}
-              <MagneticButton
-                as="a"
-                href={SITE_CONFIG.contact.phoneTel}
-                data-cursor="Call"
-                className="group relative inline-flex items-center gap-2 overflow-hidden rounded-full bg-gradient-to-r from-[#0F766E] to-[#16A34A] px-4 py-2 text-xs sm:text-sm font-semibold text-white shadow-sm hover:shadow-md hover:from-[#0d665f] hover:to-[#15803d] transition-all duration-200 whitespace-nowrap animate-sheen"
-              >
-                <Phone className="h-3.5 w-3.5 transition-transform group-hover:rotate-12" />
-                <span>Call Store</span>
-              </MagneticButton>
+              {/* FIX 2: Full Call Button on md+, compact 44px round icon on mobile */}
+              <div className="hidden md:block">
+                <MagneticButton
+                  as="a"
+                  href={SITE_CONFIG.contact.phoneTel}
+                  data-cursor="Call"
+                  ariaLabel={`Call Declare Groceries at ${SITE_CONFIG.contact.phoneFormatted}`}
+                  className="group relative inline-flex items-center justify-center gap-2 overflow-hidden rounded-full bg-gradient-to-r from-[#0F766E] to-[#16A34A] px-4 py-2.5 text-xs sm:text-sm font-semibold text-white shadow-sm hover:shadow-md hover:from-[#0d665f] hover:to-[#15803d] transition-all duration-200 whitespace-nowrap min-h-[44px] animate-sheen"
+                >
+                  <Phone className="h-3.5 w-3.5 transition-transform group-hover:rotate-12 shrink-0" />
+                  <span>Call Store</span>
+                </MagneticButton>
+              </div>
 
-              {/* Mobile menu toggle */}
+              {/* Mobile Round 44px Icon Button */}
+              <div className="block md:hidden">
+                <a
+                  href={SITE_CONFIG.contact.phoneTel}
+                  aria-label={`Call Declare Groceries at ${SITE_CONFIG.contact.phoneFormatted}`}
+                  className="flex h-11 w-11 items-center justify-center rounded-full bg-gradient-to-r from-[#0F766E] to-[#16A34A] text-white shadow-sm hover:opacity-95 active:scale-95 transition-all"
+                >
+                  <Phone className="h-4 w-4" />
+                </a>
+              </div>
+
+              {/* Mobile hamburger menu toggle */}
               <button
                 type="button"
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="md:hidden flex h-9 w-9 items-center justify-center rounded-full bg-stone-100 text-stone-900 hover:bg-stone-200 transition-colors"
+                className="md:hidden flex h-11 w-11 items-center justify-center rounded-full bg-stone-100 text-stone-900 hover:bg-stone-200 transition-colors"
                 aria-label="Toggle Navigation Menu"
               >
                 {mobileMenuOpen ? (
@@ -189,10 +188,10 @@ export const Navbar: React.FC = () => {
       <AnimatePresence>
         {mobileMenuOpen && (
           <motion.div
-            initial={{ opacity: 0, y: -20 }}
+            initial={{ opacity: 0, y: -16 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.25 }}
+            exit={{ opacity: 0, y: -16 }}
+            transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
             className="fixed inset-0 z-40 flex flex-col justify-between bg-[#FDFBF7] px-6 pt-24 pb-10 md:hidden"
           >
             <div className="flex flex-col space-y-4">
@@ -215,9 +214,9 @@ export const Navbar: React.FC = () => {
                   key={item.name}
                   href={item.href}
                   onClick={() => setMobileMenuOpen(false)}
-                  initial={{ opacity: 0, x: -16 }}
+                  initial={{ opacity: 0, x: -12 }}
                   animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: index * 0.05 + 0.1 }}
+                  transition={{ delay: index * 0.04 + 0.05 }}
                   className="text-2xl font-display font-semibold text-[#0B1215] hover:text-[#0F766E] transition-colors py-1"
                 >
                   {item.name}
@@ -234,19 +233,19 @@ export const Navbar: React.FC = () => {
               <div className="flex gap-3">
                 <a
                   href={SITE_CONFIG.contact.phoneTel}
-                  className="flex-1 flex items-center justify-center gap-2 rounded-xl bg-emerald-700 py-3 text-sm font-semibold text-white shadow-sm"
+                  className="flex-1 inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#0F766E] to-[#16A34A] min-h-[48px] px-4 text-sm font-semibold text-white shadow-sm whitespace-nowrap active:scale-98 transition-transform"
                 >
-                  <Phone className="h-4 w-4" />
+                  <Phone className="h-4 w-4 shrink-0" />
                   <span>Call Store</span>
                 </a>
                 <a
                   href={SITE_CONFIG.contact.tiktokUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center justify-center gap-1.5 rounded-xl border border-stone-300 bg-white px-4 py-3 text-sm font-medium text-stone-800"
+                  className="inline-flex items-center justify-center gap-1.5 rounded-xl border border-stone-300 bg-white min-h-[48px] px-4 text-sm font-medium text-stone-800 whitespace-nowrap"
                 >
                   <span>TikTok</span>
-                  <ExternalLink className="h-3.5 w-3.5" />
+                  <ExternalLink className="h-3.5 w-3.5 shrink-0" />
                 </a>
               </div>
             </div>

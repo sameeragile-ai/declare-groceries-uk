@@ -4,13 +4,12 @@ import {
   MapPin,
   Phone,
   MessageCircle,
-  Clock,
   Send,
   CheckCircle2,
   AlertCircle,
   ArrowUpRight,
 } from 'lucide-react';
-import { SITE_CONFIG, getStoreStatus } from '../config/site';
+import { SITE_CONFIG } from '../config/site';
 import { MagneticButton } from '../components/MagneticButton';
 
 interface FormData {
@@ -36,7 +35,6 @@ export const ContactPage: React.FC = () => {
 
   const [errors, setErrors] = useState<FormErrors>({});
   const [isSubmitted, setIsSubmitted] = useState(false);
-  const storeStatus = getStoreStatus();
 
   const validate = (): boolean => {
     const newErrors: FormErrors = {};
@@ -72,7 +70,7 @@ export const ContactPage: React.FC = () => {
     // Prompt user to open WhatsApp directly
     setTimeout(() => {
       window.open(waLink, '_blank');
-    }, 800);
+    }, 600);
   };
 
   return (
@@ -93,9 +91,9 @@ export const ContactPage: React.FC = () => {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-start">
           {/* Left Form (7 cols) */}
-          <div className="lg:col-span-7 p-7 sm:p-10 rounded-3xl bg-white border border-stone-200/90 shadow-sm">
+          <div className="lg:col-span-7 p-7 sm:p-10 rounded-3xl bg-white border border-black/5 shadow-[0_4px_20px_rgb(0,0,0,0.03)]">
             <h2 className="text-2xl font-display font-bold text-stone-900 mb-2">
               Send an Enquiry
             </h2>
@@ -243,9 +241,9 @@ export const ContactPage: React.FC = () => {
               {/* Submit CTA */}
               <button
                 type="submit"
-                className="w-full flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-[#0F766E] to-[#16A34A] py-3.5 text-sm sm:text-base font-semibold text-white shadow-md hover:shadow-lg transition-all animate-sheen"
+                className="w-full inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-[#0F766E] to-[#16A34A] py-3.5 min-h-[48px] text-sm sm:text-base font-semibold text-white shadow-md hover:shadow-lg transition-all animate-sheen whitespace-nowrap"
               >
-                <Send className="h-4 w-4" />
+                <Send className="h-4 w-4 shrink-0" />
                 <span>Send WhatsApp Enquiry</span>
               </button>
             </form>
@@ -254,12 +252,12 @@ export const ContactPage: React.FC = () => {
           {/* Right Info Details (5 cols) */}
           <div className="lg:col-span-5 space-y-6">
             {/* Quick Contact Card */}
-            <div className="p-7 rounded-3xl bg-white border border-stone-200/90 shadow-sm space-y-5">
+            <div className="p-7 rounded-3xl bg-white border border-black/5 shadow-[0_4px_20px_rgb(0,0,0,0.03)] space-y-5">
               <h3 className="text-lg font-display font-bold text-stone-900">
                 Direct Contact Methods
               </h3>
 
-              <div className="space-y-4 text-sm">
+              <div className="space-y-3 text-sm">
                 <a
                   href={SITE_CONFIG.contact.phoneTel}
                   className="flex items-start gap-3 p-3 rounded-2xl hover:bg-stone-50 transition-colors group"
@@ -335,11 +333,11 @@ export const ContactPage: React.FC = () => {
                 href={SITE_CONFIG.contact.mapsDirectionsUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 rounded-xl bg-white text-stone-900 px-4 py-2.5 text-xs font-bold shadow hover:bg-stone-100 transition-colors"
+                className="inline-flex items-center gap-2 rounded-xl bg-white text-stone-900 px-4 py-2.5 min-h-[44px] text-xs font-bold shadow hover:bg-stone-100 transition-colors whitespace-nowrap"
               >
-                <MapPin className="h-3.5 w-3.5 text-emerald-700" />
+                <MapPin className="h-3.5 w-3.5 text-emerald-700 shrink-0" />
                 <span>Open Google Maps Directions</span>
-                <ArrowUpRight className="h-3.5 w-3.5" />
+                <ArrowUpRight className="h-3.5 w-3.5 shrink-0" />
               </a>
             </div>
           </div>

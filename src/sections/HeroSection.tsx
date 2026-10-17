@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
+import { motion, AnimatePresence, useMotionValue, useSpring } from 'motion/react';
 import {
   MapPin,
   Phone,
@@ -7,7 +7,6 @@ import {
   Star,
   ShieldCheck,
   Clock,
-  Sparkles,
 } from 'lucide-react';
 import { SITE_CONFIG, getStoreStatus } from '../config/site';
 import { STORE_IMAGES } from '../assets/images';
@@ -15,40 +14,52 @@ import { MagneticButton } from '../components/MagneticButton';
 
 const REGIONS = ['Africa', 'Caribbean', 'Italy'];
 
-export const HeroSection: React.FC = () => {
+export const HeroSection: React.FC = React.memo(() => {
   const [regionIndex, setRegionIndex] = useState(0);
-  const [mouseOffset, setMouseOffset] = useState({ x: 0, y: 0 });
   const storeStatus = getStoreStatus();
 
-  // Rotate region name every 2.5s
+  // FIX 6: Motion values for mouse parallax with ZERO React state re-renders
+  const mouseX = useMotionValue(0);
+  const mouseY = useMotionValue(0);
+
+  const springConfig = { damping: 30, stiffness: 120, mass: 0.2 };
+  const smoothParallaxX = useSpring(mouseX, springConfig);
+  const smoothParallaxY = useSpring(mouseY, springConfig);
+
+  // Rotate region name every 2.8s
   useEffect(() => {
     const interval = setInterval(() => {
       setRegionIndex((prev) => (prev + 1) % REGIONS.length);
-    }, 2500);
+    }, 2800);
     return () => clearInterval(interval);
   }, []);
 
-  // Subtle desktop mouse parallax on hero imagery
+  // Desktop mouse parallax via MotionValues only on fine pointer
   const handleMouseMove = (e: React.MouseEvent) => {
+    if (window.matchMedia('(pointer: coarse)').matches) return;
     const { clientX, clientY, currentTarget } = e;
-    const { width, height } = currentTarget.getBoundingClientRect();
-    const x = (clientX / width - 0.5) * 20;
-    const y = (clientY / height - 0.5) * 20;
-    setMouseOffset({ x, y });
+    const { width, height, left, top } = currentTarget.getBoundingClientRect();
+    const x = ((clientX - left) / width - 0.5) * 16;
+    const y = ((clientY - top) / height - 0.5) * 16;
+    mouseX.set(x);
+    mouseY.set(y);
+  };
+
+  const handleMouseLeave = () => {
+    mouseX.set(0);
+    mouseY.set(0);
   };
 
   return (
     <section
       onMouseMove={handleMouseMove}
-      className="relative min-h-[92vh] pt-28 pb-16 lg:pt-36 lg:pb-24 px-4 sm:px-6 lg:px-8 overflow-hidden flex flex-col justify-between"
+      onMouseLeave={handleMouseLeave}
+      className="relative min-h-[90vh] pt-28 pb-16 lg:pt-36 lg:pb-24 px-4 sm:px-6 lg:px-8 overflow-hidden flex flex-col justify-between"
     >
-      {/* Animated soft gradient mesh blobs in background */}
-      <div className="absolute top-1/4 left-1/10 -z-10 h-80 w-80 sm:h-96 sm:w-96 rounded-full bg-emerald-200/35 blur-3xl pointer-events-none animate-pulse" />
-      <div
-        className="absolute top-1/3 right-1/12 -z-10 h-72 w-72 sm:h-96 sm:w-96 rounded-full bg-amber-200/30 blur-3xl pointer-events-none"
-        style={{ animationDuration: '8s' }}
-      />
-      <div className="absolute bottom-10 left-1/3 -z-10 h-64 w-64 rounded-full bg-lime-200/25 blur-3xl pointer-events-none" />
+      {/* FIX 6: Pre-blurred static radial gradients with will-change-transform, zero layout repaint */}
+      <div className="absolute top-1/4 left-1/10 -z-10 h-72 w-72 sm:h-96 sm:w-96 rounded-full bg-[radial-gradient(circle,rgba(15,118,110,0.18)_0%,transparent_70%)] pointer-events-none will-change-transform" />
+      <div className="absolute top-1/3 right-1/12 -z-10 h-72 w-72 sm:h-96 sm:w-96 rounded-full bg-[radial-gradient(circle,rgba(245,158,11,0.14)_0%,transparent_70%)] pointer-events-none will-change-transform" />
+      <div className="absolute bottom-10 left-1/3 -z-10 h-64 w-64 rounded-full bg-[radial-gradient(circle,rgba(132,204,22,0.12)_0%,transparent_70%)] pointer-events-none will-change-transform" />
 
       <div className="mx-auto max-w-7xl w-full">
         {/* Top Eyebrow / Kicker */}
@@ -62,7 +73,7 @@ export const HeroSection: React.FC = () => {
         </div>
 
         {/* 2-Column Split Asymmetric Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-8 items-center">
           {/* Column 1: Editorial Headline & Copy (7 cols) */}
           <div className="lg:col-span-7 space-y-6">
             <h1 className="font-display font-bold text-4xl sm:text-6xl lg:text-[4.25rem] leading-[0.98] tracking-tight text-[#0B1215]">
@@ -74,10 +85,10 @@ export const HeroSection: React.FC = () => {
                 <AnimatePresence mode="wait">
                   <motion.span
                     key={REGIONS[regionIndex]}
-                    initial={{ y: 50, opacity: 0, rotateX: 60 }}
-                    animate={{ y: 0, opacity: 1, rotateX: 0 }}
-                    exit={{ y: -50, opacity: 0, rotateX: -60 }}
-                    transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+                    initial={{ y: 24, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    exit={{ y: -24, opacity: 0 }}
+                    transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
                     className="inline-block text-gradient-emerald font-display font-extrabold"
                   >
                     {REGIONS[regionIndex]}.
@@ -93,28 +104,30 @@ export const HeroSection: React.FC = () => {
               delicacies.
             </p>
 
-            {/* CTAs */}
-            <div className="flex flex-wrap items-center gap-4 pt-2">
+            {/* FIX 2: Responsive Hero CTAs — below 480px stack vertically at full width with equal 48px height */}
+            <div className="flex flex-col min-[480px]:flex-row items-stretch min-[480px]:items-center gap-3 sm:gap-4 pt-2">
               <MagneticButton
                 as="a"
                 href={SITE_CONFIG.contact.mapsDirectionsUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 data-cursor="Directions"
-                className="group relative inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-[#0F766E] to-[#16A34A] px-6 py-3.5 text-sm sm:text-base font-semibold text-white shadow-md hover:shadow-lg transition-all duration-200 animate-sheen"
+                ariaLabel="Get Directions to 374 Moston Ln, Manchester"
+                className="group relative inline-flex items-center justify-center gap-2 rounded-full bg-gradient-to-r from-[#0F766E] to-[#16A34A] px-6 py-3 min-h-[48px] text-sm sm:text-base font-semibold text-white shadow-md hover:shadow-lg transition-all duration-200 whitespace-nowrap animate-sheen w-full min-[480px]:w-auto"
               >
-                <MapPin className="h-4 w-4" />
+                <MapPin className="h-4 w-4 shrink-0" />
                 <span>Get Directions</span>
-                <ArrowUpRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+                <ArrowUpRight className="h-4 w-4 shrink-0 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
               </MagneticButton>
 
               <MagneticButton
                 as="a"
                 href={SITE_CONFIG.contact.phoneTel}
                 data-cursor="Call"
-                className="inline-flex items-center gap-2 rounded-full border border-stone-300 bg-white/80 backdrop-blur-sm px-6 py-3.5 text-sm sm:text-base font-semibold text-stone-800 hover:border-emerald-700 hover:text-emerald-800 transition-all duration-200"
+                ariaLabel={`Call Declare Groceries at ${SITE_CONFIG.contact.phoneFormatted}`}
+                className="inline-flex items-center justify-center gap-2 rounded-full border border-stone-300 bg-white/90 px-6 py-3 min-h-[48px] text-sm sm:text-base font-semibold text-stone-800 hover:border-emerald-700 hover:text-emerald-800 transition-all duration-200 whitespace-nowrap w-full min-[480px]:w-auto"
               >
-                <Phone className="h-4 w-4" />
+                <Phone className="h-4 w-4 shrink-0 text-emerald-700" />
                 <span>Call Store ({SITE_CONFIG.contact.phoneFormatted})</span>
               </MagneticButton>
             </div>
@@ -147,38 +160,30 @@ export const HeroSection: React.FC = () => {
           <div className="lg:col-span-5 relative mt-6 lg:mt-0 flex justify-center items-center">
             <motion.div
               style={{
-                x: mouseOffset.x,
-                y: mouseOffset.y,
+                x: smoothParallaxX,
+                y: smoothParallaxY,
               }}
-              transition={{ type: 'spring', damping: 30, stiffness: 200 }}
-              className="relative w-full max-w-md sm:max-w-lg aspect-[4/5] sm:aspect-[4/4.5]"
+              className="relative w-full max-w-md sm:max-w-lg aspect-[4/5] sm:aspect-[4/4.5] will-change-transform"
             >
               {/* Back fanned card (Italian snacks / pantry) */}
-              <motion.div
-                initial={{ rotate: -8, scale: 0.95 }}
-                animate={{ rotate: -5, scale: 0.98 }}
-                className="absolute inset-0 rounded-3xl overflow-hidden shadow-xl border-4 border-white transform -translate-x-3 -translate-y-2 bg-stone-100"
-              >
+              <div className="absolute inset-0 rounded-3xl overflow-hidden shadow-xl border-4 border-white transform -translate-x-3 -translate-y-2 -rotate-3 bg-stone-100">
                 <img
                   src={STORE_IMAGES.italianSnacks}
                   alt="Imported Italian treats on shelf: Pan di Stelle, Gocciole"
                   className="h-full w-full object-cover"
                   loading="eager"
+                  fetchPriority="high"
                   referrerPolicy="no-referrer"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
                 <div className="absolute bottom-4 left-4 text-white text-xs font-medium">
                   Italian Treats & Confectionery
                 </div>
-              </motion.div>
+              </div>
 
               {/* Front main card (Storefront / Fresh Produce) */}
-              <motion.div
-                initial={{ rotate: 2 }}
-                animate={{ rotate: 3 }}
-                whileHover={{ rotate: 0, scale: 1.02 }}
-                transition={{ duration: 0.3 }}
-                className="absolute inset-0 rounded-3xl overflow-hidden shadow-2xl border-4 border-white transform translate-x-3 translate-y-3 bg-stone-100"
+              <div
+                className="absolute inset-0 rounded-3xl overflow-hidden shadow-2xl border-4 border-white transform translate-x-3 translate-y-3 rotate-2 hover:rotate-0 hover:scale-[1.01] transition-transform duration-300 bg-stone-100"
                 data-cursor="Explore"
               >
                 <img
@@ -186,6 +191,7 @@ export const HeroSection: React.FC = () => {
                   alt="Declare Groceries UK Storefront at 374 Moston Ln, Manchester"
                   className="h-full w-full object-cover"
                   loading="eager"
+                  fetchPriority="high"
                   referrerPolicy="no-referrer"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
@@ -197,14 +203,10 @@ export const HeroSection: React.FC = () => {
                     Declare Groceries UK
                   </h3>
                 </div>
-              </motion.div>
+              </div>
 
               {/* Floating Glass Chip 1: Google 5.0 */}
-              <motion.div
-                animate={{ y: [0, -8, 0] }}
-                transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
-                className="absolute -top-4 -left-4 z-20 flex items-center gap-2 rounded-2xl bg-white/90 backdrop-blur-md px-3.5 py-2 shadow-lg border border-stone-200/60"
-              >
+              <div className="absolute -top-4 -left-3 sm:-left-4 z-20 flex items-center gap-2 rounded-2xl bg-white/95 backdrop-blur-md px-3.5 py-2 shadow-lg border border-black/5">
                 <div className="flex h-7 w-7 items-center justify-center rounded-xl bg-amber-50 text-amber-600">
                   <Star className="h-4 w-4 fill-current" />
                 </div>
@@ -216,19 +218,10 @@ export const HeroSection: React.FC = () => {
                     Google Local Business
                   </div>
                 </div>
-              </motion.div>
+              </div>
 
               {/* Floating Glass Chip 2: Halal & Fresh */}
-              <motion.div
-                animate={{ y: [0, 8, 0] }}
-                transition={{
-                  duration: 4.5,
-                  repeat: Infinity,
-                  ease: 'easeInOut',
-                  delay: 0.5,
-                }}
-                className="absolute -bottom-4 -left-3 z-20 flex items-center gap-2 rounded-2xl bg-white/90 backdrop-blur-md px-3.5 py-2 shadow-lg border border-stone-200/60"
-              >
+              <div className="absolute -bottom-4 -left-2 sm:-left-3 z-20 flex items-center gap-2 rounded-2xl bg-white/95 backdrop-blur-md px-3.5 py-2 shadow-lg border border-black/5">
                 <div className="flex h-7 w-7 items-center justify-center rounded-xl bg-emerald-50 text-emerald-700">
                   <ShieldCheck className="h-4 w-4" />
                 </div>
@@ -240,19 +233,10 @@ export const HeroSection: React.FC = () => {
                     Fresh & Frozen Selections
                   </div>
                 </div>
-              </motion.div>
+              </div>
 
               {/* Floating Glass Chip 3: Closes 9 PM */}
-              <motion.div
-                animate={{ y: [0, -6, 0] }}
-                transition={{
-                  duration: 5,
-                  repeat: Infinity,
-                  ease: 'easeInOut',
-                  delay: 1,
-                }}
-                className="absolute top-1/2 -right-5 z-20 flex items-center gap-2 rounded-2xl bg-white/95 backdrop-blur-md px-3.5 py-2 shadow-lg border border-stone-200/60"
-              >
+              <div className="absolute top-1/2 -right-3 sm:-right-5 z-20 flex items-center gap-2 rounded-2xl bg-white/95 backdrop-blur-md px-3.5 py-2 shadow-lg border border-black/5">
                 <div className="flex h-7 w-7 items-center justify-center rounded-xl bg-lime-50 text-lime-700">
                   <Clock className="h-4 w-4" />
                 </div>
@@ -264,7 +248,7 @@ export const HeroSection: React.FC = () => {
                     {storeStatus.statusText}
                   </div>
                 </div>
-              </motion.div>
+              </div>
             </motion.div>
           </div>
         </div>
@@ -282,4 +266,4 @@ export const HeroSection: React.FC = () => {
       </div>
     </section>
   );
-};
+});

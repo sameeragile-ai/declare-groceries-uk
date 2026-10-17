@@ -1,9 +1,9 @@
 import React from 'react';
 import { motion } from 'motion/react';
-import { ShieldCheck, Fish, Sparkles, Snowflake, Carrot, Award } from 'lucide-react';
+import { ShieldCheck, Fish, Snowflake, Award, PackageCheck } from 'lucide-react';
 import { STORE_IMAGES } from '../assets/images';
 
-export const HalalAndFresh: React.FC = () => {
+export const HalalAndFresh: React.FC = React.memo(() => {
   return (
     <section
       id="halal-fresh"
@@ -30,11 +30,11 @@ export const HalalAndFresh: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
           {/* Tile 1: LARGE HERO HIGHLIGHT - Halal Meats & Poultry (Spans 2 cols, 2 rows) */}
           <motion.div
+            initial={{ opacity: 0, y: 24 }}
             whileInView={{ opacity: 1, y: 0 }}
-            initial={{ opacity: 0, y: 30 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5 }}
-            className="md:col-span-2 md:row-span-2 relative rounded-3xl overflow-hidden bg-white border border-stone-200 shadow-sm flex flex-col justify-between group"
+            viewport={{ once: true, margin: '-80px' }}
+            transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+            className="md:col-span-2 md:row-span-2 relative rounded-3xl overflow-hidden bg-white border border-black/5 shadow-[0_4px_20px_rgb(0,0,0,0.03)] flex flex-col justify-between group"
             data-cursor="Halal Meats"
           >
             <div className="relative h-64 sm:h-80 w-full overflow-hidden bg-stone-100">
@@ -43,10 +43,11 @@ export const HalalAndFresh: React.FC = () => {
                 alt="100% Halal Certified Meats and Butcher Selection at Declare Groceries"
                 className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
                 loading="lazy"
+                decoding="async"
                 referrerPolicy="no-referrer"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-              <div className="absolute top-4 left-4 flex items-center gap-1.5 rounded-full bg-emerald-950/80 backdrop-blur-md px-3.5 py-1 text-xs font-semibold text-emerald-300 border border-emerald-500/30">
+              <div className="absolute top-4 left-4 flex items-center gap-1.5 rounded-full bg-emerald-950/90 px-3.5 py-1 text-xs font-semibold text-emerald-300 border border-emerald-500/30">
                 <ShieldCheck className="h-3.5 w-3.5" />
                 <span>100% Halal Certified</span>
               </div>
@@ -77,11 +78,11 @@ export const HalalAndFresh: React.FC = () => {
 
           {/* Tile 2: Fresh Tilapia & Seafood */}
           <motion.div
+            initial={{ opacity: 0, y: 24 }}
             whileInView={{ opacity: 1, y: 0 }}
-            initial={{ opacity: 0, y: 30 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5, delay: 0.1 }}
-            className="md:col-span-1 lg:col-span-2 relative rounded-3xl overflow-hidden bg-white border border-stone-200 shadow-sm flex flex-col justify-between group"
+            viewport={{ once: true, margin: '-80px' }}
+            transition={{ duration: 0.7, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
+            className="md:col-span-1 lg:col-span-2 relative rounded-3xl overflow-hidden bg-white border border-black/5 shadow-[0_4px_20px_rgb(0,0,0,0.03)] flex flex-col justify-between group"
             data-cursor="Fresh Fish"
           >
             <div className="relative h-48 sm:h-52 w-full overflow-hidden bg-stone-100">
@@ -90,10 +91,11 @@ export const HalalAndFresh: React.FC = () => {
                 alt="Fresh whole tilapia and red snapper on crushed ice"
                 className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
                 loading="lazy"
+                decoding="async"
                 referrerPolicy="no-referrer"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-transparent to-transparent" />
-              <div className="absolute top-4 left-4 flex items-center gap-1.5 rounded-full bg-cyan-950/80 backdrop-blur-md px-3 py-1 text-xs font-semibold text-cyan-300 border border-cyan-500/30">
+              <div className="absolute top-4 left-4 flex items-center gap-1.5 rounded-full bg-cyan-950/90 px-3 py-1 text-xs font-semibold text-cyan-300 border border-cyan-500/30">
                 <Fish className="h-3.5 w-3.5" />
                 <span>Fresh Seafood</span>
               </div>
@@ -111,11 +113,11 @@ export const HalalAndFresh: React.FC = () => {
 
           {/* Tile 3: Imported Italian Treats */}
           <motion.div
+            initial={{ opacity: 0, y: 24 }}
             whileInView={{ opacity: 1, y: 0 }}
-            initial={{ opacity: 0, y: 30 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-            className="md:col-span-1 lg:col-span-1 relative rounded-3xl overflow-hidden bg-white border border-stone-200 shadow-sm flex flex-col justify-between group"
+            viewport={{ once: true, margin: '-80px' }}
+            transition={{ duration: 0.7, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
+            className="md:col-span-1 lg:col-span-1 relative rounded-3xl overflow-hidden bg-white border border-black/5 shadow-[0_4px_20px_rgb(0,0,0,0.03)] flex flex-col justify-between group"
             data-cursor="Italian"
           >
             <div className="relative h-44 w-full overflow-hidden bg-stone-100">
@@ -124,12 +126,13 @@ export const HalalAndFresh: React.FC = () => {
                 alt="Pan di Stelle and Italian sweets on shelf"
                 className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
                 loading="lazy"
+                decoding="async"
                 referrerPolicy="no-referrer"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
               <div className="absolute top-3 left-3 text-xs font-semibold text-amber-300 flex items-center gap-1">
-                <Sparkles className="h-3.5 w-3.5" />
-                <span>Imported</span>
+                <PackageCheck className="h-3.5 w-3.5" />
+                <span>Imported Direct</span>
               </div>
             </div>
             <div className="p-5 space-y-2">
@@ -144,11 +147,11 @@ export const HalalAndFresh: React.FC = () => {
 
           {/* Tile 4: Deep Freeze Cultural Staples */}
           <motion.div
+            initial={{ opacity: 0, y: 24 }}
             whileInView={{ opacity: 1, y: 0 }}
-            initial={{ opacity: 0, y: 30 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5, delay: 0.25 }}
-            className="md:col-span-1 lg:col-span-1 relative rounded-3xl overflow-hidden bg-white border border-stone-200 shadow-sm flex flex-col justify-between group"
+            viewport={{ once: true, margin: '-80px' }}
+            transition={{ duration: 0.7, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
+            className="md:col-span-1 lg:col-span-1 relative rounded-3xl overflow-hidden bg-white border border-black/5 shadow-[0_4px_20px_rgb(0,0,0,0.03)] flex flex-col justify-between group"
           >
             <div className="p-6 space-y-3">
               <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-sky-50 text-sky-700">
@@ -170,4 +173,4 @@ export const HalalAndFresh: React.FC = () => {
       </div>
     </section>
   );
-};
+});

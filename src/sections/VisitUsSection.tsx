@@ -1,17 +1,15 @@
 import React from 'react';
-import { motion } from 'motion/react';
 import {
   MapPin,
   Phone,
   Clock,
   ArrowUpRight,
   Navigation,
-  CheckCircle2,
 } from 'lucide-react';
 import { SITE_CONFIG, getStoreStatus } from '../config/site';
 import { MagneticButton } from '../components/MagneticButton';
 
-export const VisitUsSection: React.FC = () => {
+export const VisitUsSection: React.FC = React.memo(() => {
   const storeStatus = getStoreStatus();
 
   const daysOfWeek = [
@@ -24,7 +22,7 @@ export const VisitUsSection: React.FC = () => {
     { day: 'Sunday', hours: '9:00 AM – 9:00 PM' },
   ];
 
-  // Get current day name in lowercase
+  // Get current day name
   const todayName = new Date().toLocaleDateString('en-GB', { weekday: 'long' });
 
   return (
@@ -48,7 +46,7 @@ export const VisitUsSection: React.FC = () => {
         {/* Split Layout: Google Map Embed + Comprehensive Info Card */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
           {/* Left: Interactive Embedded Google Map (7 cols) */}
-          <div className="lg:col-span-7 rounded-3xl overflow-hidden border border-stone-200/90 shadow-md min-h-[380px] lg:min-h-full bg-stone-200 relative">
+          <div className="lg:col-span-7 rounded-3xl overflow-hidden border border-black/5 shadow-md min-h-[380px] lg:min-h-full bg-stone-200 relative">
             <iframe
               title="Declare Groceries UK Google Map Location"
               src={SITE_CONFIG.contact.mapsEmbedUrl}
@@ -76,7 +74,7 @@ export const VisitUsSection: React.FC = () => {
           </div>
 
           {/* Right: Info Card & Hours Table (5 cols) */}
-          <div className="lg:col-span-5 p-7 sm:p-8 rounded-3xl bg-white border border-stone-200/90 shadow-sm flex flex-col justify-between space-y-6">
+          <div className="lg:col-span-5 p-7 sm:p-8 rounded-3xl bg-white border border-black/5 shadow-[0_4px_20px_rgb(0,0,0,0.03)] flex flex-col justify-between space-y-6">
             {/* Live Status Badge */}
             <div className="flex items-center justify-between pb-4 border-b border-stone-100">
               <div className="flex items-center gap-2.5">
@@ -178,26 +176,28 @@ export const VisitUsSection: React.FC = () => {
               </div>
             </div>
 
-            {/* Direction CTAs */}
-            <div className="pt-2 flex flex-col sm:flex-row gap-3">
+            {/* FIX 2: Responsive Direction & Call CTAs */}
+            <div className="pt-2 flex flex-col min-[480px]:flex-row gap-3">
               <MagneticButton
                 as="a"
                 href={SITE_CONFIG.contact.mapsDirectionsUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex-1 inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-[#0F766E] to-[#16A34A] py-3 text-sm font-semibold text-white shadow-sm hover:shadow-md transition-all text-center"
+                ariaLabel="Get Directions in Google Maps"
+                className="flex-1 inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-[#0F766E] to-[#16A34A] py-3 min-h-[48px] px-4 text-sm font-semibold text-white shadow-sm hover:shadow-md transition-all text-center whitespace-nowrap"
               >
-                <MapPin className="h-4 w-4" />
+                <MapPin className="h-4 w-4 shrink-0" />
                 <span>Get Directions</span>
-                <ArrowUpRight className="h-4 w-4" />
+                <ArrowUpRight className="h-4 w-4 shrink-0" />
               </MagneticButton>
 
               <MagneticButton
                 as="a"
                 href={SITE_CONFIG.contact.phoneTel}
-                className="inline-flex items-center justify-center gap-2 rounded-2xl border border-stone-300 bg-white py-3 px-5 text-sm font-semibold text-stone-800 hover:border-emerald-700 hover:text-emerald-800 transition-colors text-center"
+                ariaLabel={`Call Declare Groceries at ${SITE_CONFIG.contact.phoneFormatted}`}
+                className="inline-flex items-center justify-center gap-2 rounded-2xl border border-stone-300 bg-white py-3 min-h-[48px] px-5 text-sm font-semibold text-stone-800 hover:border-emerald-700 hover:text-emerald-800 transition-colors text-center whitespace-nowrap"
               >
-                <Phone className="h-4 w-4" />
+                <Phone className="h-4 w-4 shrink-0 text-emerald-700" />
                 <span>Call Store</span>
               </MagneticButton>
             </div>
@@ -206,4 +206,4 @@ export const VisitUsSection: React.FC = () => {
       </div>
     </section>
   );
-};
+});

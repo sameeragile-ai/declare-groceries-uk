@@ -1,9 +1,9 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowUp, MapPin, Phone, ExternalLink, Heart } from 'lucide-react';
+import { ArrowUp, MapPin, Phone, ExternalLink } from 'lucide-react';
 import { SITE_CONFIG } from '../config/site';
 
-export const Footer: React.FC = () => {
+export const Footer: React.FC = React.memo(() => {
   const currentYear = new Date().getFullYear();
 
   const scrollToTop = () => {
@@ -12,9 +12,9 @@ export const Footer: React.FC = () => {
 
   return (
     <footer className="relative bg-[#0B1215] text-stone-300 pt-16 sm:pt-20 pb-12 px-4 sm:px-6 lg:px-8 overflow-hidden">
-      {/* Background ambient lighting */}
-      <div className="absolute top-0 left-1/4 -z-10 h-80 w-80 rounded-full bg-emerald-950/40 blur-3xl pointer-events-none" />
-      <div className="absolute bottom-0 right-1/4 -z-10 h-80 w-80 rounded-full bg-amber-950/30 blur-3xl pointer-events-none" />
+      {/* Background ambient lighting via static pre-blurred radial gradients */}
+      <div className="absolute top-0 left-1/4 -z-10 h-80 w-80 rounded-full bg-[radial-gradient(circle,rgba(6,78,59,0.3)_0%,transparent_70%)] pointer-events-none" />
+      <div className="absolute bottom-0 right-1/4 -z-10 h-80 w-80 rounded-full bg-[radial-gradient(circle,rgba(120,53,15,0.2)_0%,transparent_70%)] pointer-events-none" />
 
       <div className="mx-auto max-w-7xl">
         {/* Top Footer Content */}
@@ -145,4 +145,4 @@ export const Footer: React.FC = () => {
       </div>
     </footer>
   );
-};
+});

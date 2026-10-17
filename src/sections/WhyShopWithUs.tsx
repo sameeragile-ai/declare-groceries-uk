@@ -1,15 +1,15 @@
 import React from 'react';
 import { motion } from 'motion/react';
-import { ShieldCheck, HeartHandshake, Sparkles, Clock, CheckCircle2 } from 'lucide-react';
+import { ShieldCheck, HeartHandshake, Clock, CheckCircle2, Award } from 'lucide-react';
 import { SITE_CONFIG } from '../config/site';
 
-export const WhyShopWithUs: React.FC = () => {
+export const WhyShopWithUs: React.FC = React.memo(() => {
   const reasons = [
     {
       num: '01',
       title: 'Authenticity You Can Taste',
       desc: 'No substitutions or generic alternatives. We source direct from certified importers and regional distributors so your home recipes taste exactly as they should.',
-      icon: Sparkles,
+      icon: Award,
     },
     {
       num: '02',
@@ -35,7 +35,7 @@ export const WhyShopWithUs: React.FC = () => {
     <section className="py-20 sm:py-28 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
       <div className="mx-auto max-w-7xl">
         {/* Top Header & Stat Strip */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start mb-16">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-start mb-16">
           <div className="lg:col-span-6 space-y-4">
             <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-emerald-800">
               <CheckCircle2 className="h-4 w-4" />
@@ -51,16 +51,16 @@ export const WhyShopWithUs: React.FC = () => {
             </p>
           </div>
 
-          {/* Animated Editorial Stats Strip */}
+          {/* Stats Strip */}
           <div className="lg:col-span-6 grid grid-cols-2 sm:grid-cols-4 gap-4">
             {SITE_CONFIG.stats.map((stat, idx) => (
               <motion.div
                 key={idx}
-                whileInView={{ opacity: 1, scale: 1 }}
-                initial={{ opacity: 0, scale: 0.95 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.4, delay: idx * 0.1 }}
-                className="p-5 rounded-2xl bg-white border border-stone-200 shadow-sm text-center"
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: '-80px' }}
+                transition={{ duration: 0.6, delay: idx * 0.08, ease: [0.22, 1, 0.36, 1] }}
+                className="p-5 rounded-2xl bg-white border border-black/5 shadow-[0_2px_12px_rgb(0,0,0,0.02)] text-center"
               >
                 <div className="text-3xl sm:text-4xl font-display font-extrabold text-gradient-emerald tabular-nums">
                   {stat.value}
@@ -83,11 +83,11 @@ export const WhyShopWithUs: React.FC = () => {
             return (
               <motion.div
                 key={item.num}
+                initial={{ opacity: 0, y: 24 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                initial={{ opacity: 0, y: 25 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.4, delay: idx * 0.1 }}
-                className="group relative p-7 rounded-3xl bg-white border border-stone-200/90 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between"
+                viewport={{ once: true, margin: '-80px' }}
+                transition={{ duration: 0.6, delay: idx * 0.08, ease: [0.22, 1, 0.36, 1] }}
+                className="group relative p-7 rounded-3xl bg-white border border-black/5 shadow-[0_4px_20px_rgb(0,0,0,0.03)] hover:shadow-xl transition-all duration-300 flex flex-col justify-between"
               >
                 <div>
                   <div className="flex items-center justify-between mb-6">
@@ -115,4 +115,4 @@ export const WhyShopWithUs: React.FC = () => {
       </div>
     </section>
   );
-};
+});
