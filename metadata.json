@@ -1,0 +1,6 @@
+{
+  "name": "Declare Groceries UK",
+  "description": "Authentic African, Caribbean, and Italian international grocery store in Moston, Manchester. Halal meats, poultry, fresh fish, frozen foods, and imported Italian snacks.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
